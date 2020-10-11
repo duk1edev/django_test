@@ -7,7 +7,7 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from .utils import MyMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from django.core.paginator import Paginator
 
 class HomeNews(MyMixin, ListView):
     model = New
@@ -15,6 +15,7 @@ class HomeNews(MyMixin, ListView):
     context_object_name = 'news'
     queryset = New.objects.select_related('category')
     mixin_prop = 'Hello world'
+    paginate_by = 5
 
     # extra_context = {'title': 'Главная'}
 
@@ -47,6 +48,7 @@ class NewsByCategory(MyMixin, ListView):
     template_name = 'news/home_news.html'
     context_object_name = 'news'
     allow_empty = False  # не показывать если нет новости или путстого списка
+    paginate_by = 2
 
     def get_context_data(self, **kwargs):
         context = super(NewsByCategory, self).get_context_data(**kwargs)
@@ -103,6 +105,7 @@ class CreateNews(LoginRequiredMixin, CreateView):
     # raise_exception = True
     # success_url = reverse_lazy('home')
 
+
 # Connected with model
 # -----------------------------------
 # def add_news(request):
@@ -116,3 +119,13 @@ class CreateNews(LoginRequiredMixin, CreateView):
 #     return render(request, 'news/add_news.html', {'form': form})
 
 # class based views
+
+
+# pagination
+
+def test(request):
+    objects = ['john', 'paul', 'goerge', 'michael', 'paul', 'mike', 'john2', 'paul2', 'goerge2', 'michael2', 'paul2', 'mike2','john3', 'paul3', 'goerge3', 'michael3', 'paul3', 'mike3']
+    paginator = Paginator(objects, 3)
+    page_num = request.GET.get('page', 1)
+    page_objects = paginator.get_page(page_num)
+    return render(request, 'news/test.html', {'page_obj': page_objects})

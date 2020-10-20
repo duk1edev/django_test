@@ -9,6 +9,7 @@ from .utils import MyMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
+
 class HomeNews(MyMixin, ListView):
     model = New
     template_name = 'news/home_news.html'
@@ -124,7 +125,8 @@ class CreateNews(LoginRequiredMixin, CreateView):
 # pagination
 
 def test(request):
-    objects = ['john', 'paul', 'goerge', 'michael', 'paul', 'mike', 'john2', 'paul2', 'goerge2', 'michael2', 'paul2', 'mike2','john3', 'paul3', 'goerge3', 'michael3', 'paul3', 'mike3']
+    objects = ['john', 'paul', 'goerge', 'michael', 'paul', 'mike', 'john2', 'paul2', 'goerge2', 'michael2', 'paul2',
+               'mike2', 'john3', 'paul3', 'goerge3', 'michael3', 'paul3', 'mike3']
     paginator = Paginator(objects, 3)
     page_num = request.GET.get('page', 1)
     page_objects = paginator.get_page(page_num)

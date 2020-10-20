@@ -1,13 +1,32 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from .models import New, Category
-from .forms import NewsForm
+from .forms import NewsForm, UserRegisterForm
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from .utils import MyMixin
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+# from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Вы успешно зарегистировались!')
+            return redirect('login')
+        else:
+            messages.error(request, 'Ошибка регистрации')
+    else:
+        form = UserRegisterForm()
+    return render(request, 'news/register.html', {'form': form})
+
+
+def login(request):
+    return render(request, 'news/login.html')
 
 
 class HomeNews(MyMixin, ListView):

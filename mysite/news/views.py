@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from .models import New, Category
-from .forms import NewsForm, UserRegisterForm
+from .forms import NewsForm, UserRegisterForm, UserLoginForm
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
@@ -10,14 +10,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 # from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
+from django.contrib.auth import login, logout
+
 
 def register(request):
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            login(request, user)
             messages.success(request, 'Вы успешно зарегистировались!')
-            return redirect('login')
+            return redirect('home')
         else:
             messages.error(request, 'Ошибка регистрации')
     else:
@@ -25,8 +28,22 @@ def register(request):
     return render(request, 'news/register.html', {'form': form})
 
 
-def login(request):
-    return render(request, 'news/login.html')
+def user_login(request):
+    if request.method == 'POST':
+        form = UserLoginForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            messages.success(request, 'Добро пожаловать!')
+            return redirect('home')
+    else:
+         form = UserLoginForm()
+    return render(request, 'news/login.html', {"form": form})
+
+
+def user_logout(request):
+    logout(request)
+    return redirect('login')
 
 
 class HomeNews(MyMixin, ListView):

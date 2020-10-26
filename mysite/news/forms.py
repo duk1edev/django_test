@@ -2,7 +2,7 @@ from django import forms
 from .models import Category, New
 import re
 from django.core.exceptions import ValidationError
-from django.contrib.auth.forms import User, UserCreationForm
+from django.contrib.auth.forms import User, UserCreationForm, AuthenticationForm
 
 
 class NewsForm(forms.ModelForm):
@@ -46,7 +46,8 @@ class NewsForm(forms.ModelForm):
 
 
 class UserRegisterForm(UserCreationForm):
-    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}), help_text='Имя пользователя должно быть более 150')
+    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}),
+                               help_text='Имя пользователя должно быть более 150')
     email = forms.EmailField(label='Е-mail', widget=forms.EmailInput(attrs={'class': 'form-control'}))
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
     password2 = forms.CharField(label='Подвердите пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))
@@ -60,3 +61,8 @@ class UserRegisterForm(UserCreationForm):
         #     'email': forms.EmailInput(attrs={'class': 'form-control'}),
         #     'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
         # }
+
+
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form-control'}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-control'}))

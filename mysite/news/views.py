@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, Http404
 from .models import New, Category
-from .forms import NewsForm, UserRegisterForm, UserLoginForm
+from .forms import NewsForm, UserRegisterForm, UserLoginForm, ContactForm
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
@@ -11,6 +11,7 @@ from django.core.paginator import Paginator
 # from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.core.mail import send_mail
 
 
 def register(request):
@@ -37,7 +38,7 @@ def user_login(request):
             messages.success(request, 'Добро пожаловать!')
             return redirect('home')
     else:
-         form = UserLoginForm()
+        form = UserLoginForm()
     return render(request, 'news/login.html', {"form": form})
 
 
@@ -75,9 +76,22 @@ class HomeNews(MyMixin, ListView):
 #     }
 #     return render(request, 'news/index.html', context)
 
-
-def test(request):
-    return HttpResponse('<h2>Test page!</h2>')
+# send to mail
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            mail = send_mail(form.cleaned_data['subject'], form.cleaned_data['content'], 'duk1e@urk.net', ['duk1e.drum@gmail.com'], fail_silently=False)
+            if mail:
+                messages.success(request, 'Письмо отправлено')
+                return redirect('contact')
+            else:
+                messages.error(request, 'Ошибка отправки')
+        else:
+            messages.error(request, 'Ошибка валидации')
+    else:
+        form = ContactForm()
+    return render(request, 'news/test.html', {'form': form})
 
 
 class NewsByCategory(MyMixin, ListView):
